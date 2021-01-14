@@ -1,1 +1,94 @@
-<router-outlet></router-outlet>
+<div>
+  <form [formGroup]="addressForm">
+    <div fxLayoutGap="10px" fxLayout="row" class="mg-10">
+      <mat-form-field appearance="outline" fxFlex="25">
+        <mat-label>Wybierz protokół</mat-label>
+        <mat-select formControlName="protocol" required>
+          <mat-option *ngFor="let protocol of protocols" [value]="protocol">
+            {{ protocol }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" fxFlex="25">
+        <mat-label>Adres</mat-label>
+        <input
+          matInput
+          placeholder="255.255.255.0 / localhost"
+          formControlName="address"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" fxFlex="25">
+        <mat-label>Port</mat-label>
+        <input
+          matInput
+          placeholder="3000"
+          formControlName="port"
+          minlength="1"
+          maxlength="5"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" fxFlex="25">
+        <mat-label>Wybierz metodę</mat-label>
+        <mat-select formControlName="httpMethod" required>
+          <mat-option *ngFor="let method of httpMethods" [value]="method">
+            {{ method }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div fxLayout="row" fxLayoutGap="20px" class="mg-10">
+      <div fxFlex="80">
+        <mat-form-field appearance="outline" fxFlex="100">
+          <mat-label>Ścieżka</mat-label>
+          <input
+            matInput
+            placeholder="/facts"
+            formControlName="path"
+            required
+          />
+        </mat-form-field>
+      </div>
+      <div fxFlex="20">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          (click)="testApi()"
+        >
+          Testuj
+        </button>
+      </div>
+    </div>
+    <div
+      *ngIf="
+        addressForm.controls.httpMethod.value === 'PUT' ||
+        addressForm.controls.httpMethod.value === 'POST' ||
+        addressForm.controls.httpMethod.value === 'DELETE'
+      "
+      class="mg-10"
+    >
+      <mat-form-field appearance="outline" fxFlex="100">
+        <mat-label>Ścieżka</mat-label>
+        <input matInput placeholder="/facts" formControlName="path" required />
+      </mat-form-field>
+    </div>
+  </form>
+  <div class="mg-10">
+    Wygenerowany curl: <strong>{{ curlCommand }}</strong>
+  </div>
+  <mat-card
+    *ngIf="subscribeState"
+    style="background-color: antiquewhite; margin-top: 25px"
+    class="mg-10"
+  >
+    <mat-card-header>
+      <strong
+        >Wynik ostatniego testu
+        <hr /></strong
+    ></mat-card-header>
+    <mat-card-content>
+      <strong>{{ subscribeState }}</strong>
+    </mat-card-content>
+  </mat-card>
+</div>

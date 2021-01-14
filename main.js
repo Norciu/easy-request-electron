@@ -12,7 +12,7 @@ function createWindow() {
     win = new electron_1.BrowserWindow({
         x: 0,
         y: 0,
-        width: 600,
+        width: 1200,
         height: 800,
         webPreferences: {
             nodeIntegration: true,
@@ -22,7 +22,7 @@ function createWindow() {
         },
     });
     if (serve) {
-        win.webContents.openDevTools();
+        // win.webContents.openDevTools();
         require('electron-reload')(__dirname, {
             electron: require(__dirname + "/node_modules/electron")
         });

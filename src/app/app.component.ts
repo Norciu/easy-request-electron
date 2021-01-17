@@ -4,6 +4,9 @@ import { FormBuilder, Validators } from "@angular/forms";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { catchError } from "rxjs/operators";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {MatDialog} from "@angular/material/dialog";
+import {AuthorComponent} from "./author/author.component";
 
 export interface AddressForm<T> {
   address: T,
@@ -21,7 +24,7 @@ export interface AddressForm<T> {
 export class AppComponent implements OnInit {
   title = "easy-request-electron";
   curlCommand = "";
-  subscribeState: string;
+  subscribeState: any;
   httpMethods = ["GET", "POST", "DELETE", "PUT"];
   protocols = ["HTTP", "HTTPS"];
   addressForm = this.fb.group({
@@ -40,7 +43,9 @@ export class AppComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    private snack: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   isEmpty(str: string): boolean {
@@ -64,16 +69,17 @@ export class AppComponent implements OnInit {
 
   testApi() {
     this.sendRequest().subscribe((val) => {
-      this.subscribeState = JSON.stringify(val);
+      this.subscribeState = JSON.parse(JSON.stringify(val));
     });
   }
 
   sendRequest(): Observable<object> {
     const method = this.addressForm.controls.httpMethod.value;
-    console.log(method);
+    this.snack.open('Wysłano zapytanie!', null, {duration: 1000})
     if (method === "GET") {
       return this.http.get(this.endpoint).pipe(
         catchError((e) => {
+          this.subscribeState = e;
           throw new Error(e);
         })
       );
@@ -114,5 +120,13 @@ export class AppComponent implements OnInit {
       port: this.isEmpty(x.port) ? "" : ":" + x.port,
       path: this.isEmpty(x.path) ? "/" : x.path,
     };
+  }
+
+  openDialog() {
+    const dialogRef = this.dialog.open(AuthorComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 }

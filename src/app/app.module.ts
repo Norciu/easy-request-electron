@@ -25,6 +25,8 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import { AuthorComponent } from './author/author.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -32,7 +34,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 }
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, AuthorComponent],
   imports: [
     BrowserModule,
     FormsModule,
@@ -54,6 +56,8 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
+      MatSnackBarModule,
+      MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent],

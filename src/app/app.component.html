@@ -77,7 +77,7 @@
     >
       <mat-form-field appearance="outline" fxFlex="100">
         <mat-label>Body</mat-label>
-        <input matInput placeholder="{test: test}" required />
+        <input matInput placeholder="{test: test}" formControlName="body"/>
       </mat-form-field>
     </div>
   </form>
@@ -87,7 +87,7 @@
     <strong>{{ curlCommand }}</strong>
   </div>
   <mat-card
-    *ngIf="subscribeState"
+    *ngIf="subscribeStatus"
     style="background-color: #5cb85c; margin-top: 25px"
     class="mg-10"
   >
@@ -96,6 +96,20 @@
         >Wynik ostatniego testu
         <hr /></strong
     ></mat-card-header>
+    <mat-card-content style="white-space: pre-line">
+      <strong>{{ subscribeState | json }}</strong>
+    </mat-card-content>
+  </mat-card>
+  <mat-card
+          *ngIf="subscribeStatus === false"
+          style="background-color: #d9534f; margin-top: 25px"
+          class="mg-10"
+  >
+    <mat-card-header>
+      <strong
+      >Wynik ostatniego testu
+        <hr /></strong
+      ></mat-card-header>
     <mat-card-content style="white-space: pre-line">
       <strong>{{ subscribeState | json }}</strong>
     </mat-card-content>

@@ -2,10 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { ElectronService } from "./core/services";
 import { FormBuilder, Validators } from "@angular/forms";
 import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import {Observable, throwError} from "rxjs";
 import { catchError } from "rxjs/operators";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {AuthorComponent} from "./author/author.component";
 
 export interface AddressForm<T> {
@@ -14,6 +14,7 @@ export interface AddressForm<T> {
   method: T,
   protocol: T,
   path: T,
+  body: object
 }
 
 @Component({
@@ -22,9 +23,10 @@ export interface AddressForm<T> {
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit {
+  subscribeStatus: boolean;
   title = "easy-request-electron";
   curlCommand = "";
-  subscribeState: any;
+  subscribeState: object;
   httpMethods = ["GET", "POST", "DELETE", "PUT"];
   protocols = ["HTTP", "HTTPS"];
   addressForm = this.fb.group({
@@ -39,6 +41,7 @@ export class AppComponent implements OnInit {
     httpMethod: this.fb.control("", [Validators.required]),
     protocol: this.fb.control("", [Validators.required]),
     path: this.fb.control(""),
+    body: this.fb.control("", [Validators.pattern(/^{.*}$/gmi)])
   });
   constructor(
     private fb: FormBuilder,
@@ -69,39 +72,46 @@ export class AppComponent implements OnInit {
 
   testApi() {
     this.sendRequest().subscribe((val) => {
-      this.subscribeState = JSON.parse(JSON.stringify(val));
+      this.subscribeStatus = true;
+      this.subscribeState = val;
     });
   }
 
   sendRequest(): Observable<object> {
     const method = this.addressForm.controls.httpMethod.value;
+    console.log(method)
     this.snack.open('Wysłano zapytanie!', null, {duration: 1000})
     if (method === "GET") {
       return this.http.get(this.endpoint).pipe(
         catchError((e) => {
-          this.subscribeState = e;
-          throw new Error(e);
+          throw this.err(e);
         })
       );
     } else if (method === "POST") {
-      return this.http.post(this.endpoint, {}).pipe(
+      return this.http.post(this.endpoint, this.form.body).pipe(
         catchError((e) => {
-          throw new Error(e);
+          throw this.err(e);
         })
       );
     } else if (method === "PUT") {
-      return this.http.put(this.endpoint, {}).pipe(
+      return this.http.put(this.endpoint, this.form.body).pipe(
         catchError((e) => {
-          throw new Error(e);
+          throw this.err(e);
         })
       );
     } else if (method === "DELETE") {
-      return this.http.delete(this.endpoint, {}).pipe(
+      return this.http.delete(this.endpoint, this.form.body).pipe(
         catchError((e) => {
-          throw new Error(e);
+          throw this.err(e);
         })
       );
     }
+  }
+
+  private err(err: any): Error {
+    this.subscribeState = err;
+    this.subscribeStatus = false
+    throw new Error(err);
   }
 
   get endpoint(): string {
@@ -119,14 +129,11 @@ export class AppComponent implements OnInit {
       method: this.isEmpty(x.httpMethod) ? "" : "-X " + x.httpMethod + " ",
       port: this.isEmpty(x.port) ? "" : ":" + x.port,
       path: this.isEmpty(x.path) ? "/" : x.path,
+      body: this.isEmpty(x.body) ? {} : x.body,
     };
   }
 
-  openDialog() {
-    const dialogRef = this.dialog.open(AuthorComponent);
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
+  openDialog(): MatDialogRef<AuthorComponent> {
+    return this.dialog.open(AuthorComponent);
   }
 }

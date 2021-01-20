@@ -5,12 +5,12 @@ Whole application was made for completion of the semester on study.
 
 # Table of Contents
 
-- [Editing app](#Editing app)
-- [Building app](#Building app)
-- [Functionality](#Functionality)
-  - [Generating CURL command](#Generating CURL command)
-  - [Direct testing from app](#Direct testing from app)
-  - [Author info](#Author info)
+- [Editing app](#editing-app)
+- [Building app](#building-app)
+- [Functionality](#functionality)
+  - [Generating CURL command](#generating-curl-command)
+  - [Direct testing from app](#direct-testing-from-app)
+  - [Author info](#author-info)
 
 # Editing app
 If u wanna edit some code of this app, just edit `src` dir.  
